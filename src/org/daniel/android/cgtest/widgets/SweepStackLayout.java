@@ -1,5 +1,6 @@
 package org.daniel.android.cgtest.widgets;
 
+import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.TimeInterpolator;
@@ -11,6 +12,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import org.daniel.android.cgtest.utils.TU;
 
+import java.util.LinkedList;
+import java.util.List;
+
 /**
  * 实现栈顶滑动退出
  *
@@ -20,6 +24,8 @@ import org.daniel.android.cgtest.utils.TU;
  * @date May 27 2015 10:21 AM
  */
 public class SweepStackLayout extends ViewGroup {
+    // 显示最多的页数
+    private static final int MAX_COUNT = 4;
     //图片长宽比
     private static final float WPH = 3f / 4f;
     // 中心图片占整个View宽度的大小
@@ -38,6 +44,8 @@ public class SweepStackLayout extends ViewGroup {
     private Callback mCallback;
     //容器的长宽
     private int mHeight, mWidth;
+    // 内容宽高
+    private int mInWidth, mInHeight;
     //是否点击到图片上
     private boolean mIsTouchIn = false;
     //ACTION_DOWN事件的x和y
@@ -63,7 +71,6 @@ public class SweepStackLayout extends ViewGroup {
     }
 
     private void init(Context context) {
-
     }
 
 
@@ -73,31 +80,15 @@ public class SweepStackLayout extends ViewGroup {
         TU.j("onlayout", left, top, right, bottom);
         mWidth = right - left;
         mHeight = bottom - top;
-        int inWidth = (int) (mWidth * CENTER_SCALE);
-        int inHeight = (int) (inWidth / WPH);
+        mInWidth = (int) (mWidth * CENTER_SCALE);
+        mInHeight = (int) (mInWidth / WPH);
 
         int centerY = (int) (mHeight * VERTICAL_CENTER_PERCENT);
 
         mCX0 = mWidth / 2;
         mCY0 = centerY;
 
-        //先画后面，后画前面
-        int count = getChildCount();
-        for (int i = 0; i < count; i++) {
-            float d = (1 - BACK_SCALE) * (count - i - 1);
-            int dx = (int) (inWidth * d);
-            int dy = (int) (inHeight * d);
-
-            int l = (mWidth - inWidth) / 2 + dx;
-            int r = l + inWidth - dx * 2;
-            int t = centerY - inHeight / 2 - dx;
-            int b = t + inHeight - dx - dy;
-
-            if (l >= r || t >= b) {
-                break;
-            }
-            getChildAt(i).layout(l, t, r, b);
-        }
+        refillContent();
     }
 
     @Override
@@ -159,6 +150,9 @@ public class SweepStackLayout extends ViewGroup {
         return true;
     }
 
+    /**
+     * 获取需要运动的View
+     */
     private View getActView() {
         int count = getChildCount();
         if (count == 0) {
@@ -169,11 +163,15 @@ public class SweepStackLayout extends ViewGroup {
     }
 
 
-    private void go(View v, int x, int y, float rotation) {
+    /**
+     * 去哪？
+     */
+    private void go(final View v, final int x, final int y, float rotation) {
         if (v == null) {
             return;
         }
 
+        LinkedList<Animator> animList = new LinkedList<Animator>();
         AnimatorSet animatorSet = new AnimatorSet();
         animatorSet.setInterpolator(new TimeInterpolator() {
             @Override
@@ -181,14 +179,67 @@ public class SweepStackLayout extends ViewGroup {
                 return (float) (x + Math.sin(x * Math.PI) * 0.5);
             }
         });
-        animatorSet.playTogether(
-                ObjectAnimator.ofFloat(v, "rotation", rotation),
-                ObjectAnimator.ofFloat(v, "translationX", x),
-                ObjectAnimator.ofFloat(v, "translationY", y));
+
+        //第一个页面动画
+        animList.add(ObjectAnimator.ofFloat(v, "rotation", rotation));
+        animList.add(ObjectAnimator.ofFloat(v, "translationX", x));
+        animList.add(ObjectAnimator.ofFloat(v, "translationY", y));
+
+        if (x == 0) {
+            // 其他内容复位
+            returnAnimate(animList);
+        }
+
+        animatorSet.playTogether(animList);
+
         animatorSet.setDuration(DURATION);
+        animatorSet.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                if (mCallback != null) {
+                    if (x != 0) {
+                        removeView(v);
+                        mCallback.onPop(v, x > 0 ? 1 : -1);
+                        refillContent();
+                    }
+                }
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+            }
+        });
         animatorSet.start();
+
+
     }
 
+    private void returnAnimate(List<Animator> animList) {
+        float scale = BACK_SCALE;
+        for (int i = getChildCount() - 2; i >= 0; i--) {
+            View v = getChildAt(i);
+            int dy = (int) (mInHeight * (1 - scale) / 1.5);
+
+            animList.add(ObjectAnimator.ofFloat(v, "translationY", -dy));
+            animList.add(ObjectAnimator.ofFloat(v, "scaleX", scale));
+            animList.add(ObjectAnimator.ofFloat(v, "scaleY", scale));
+            animList.add(ObjectAnimator.ofFloat(v, "alpha", (float) Math.pow(scale, 4)));
+
+            scale -= (1 - BACK_SCALE);
+        }
+    }
+
+    /**
+     * 移动？
+     */
     private void move() {
         View v = getActView();
         if (v == null) {
@@ -206,6 +257,67 @@ public class SweepStackLayout extends ViewGroup {
         // rotate
         double degree = Math.toDegrees(Math.atan2(mCY1 + mHeight, mCX1 - mCX0)) - 90;
         v.setRotation((float) degree);
+        float progress = (mCX1 - mCX0) / (float) mWidth / (UNSELECT_SCALE / 2);
+
+        childAnimate(progress);
+    }
+
+    /**
+     * @param progress 0: center
+     *                 positive: right
+     *                 negtive: left
+     *                 [-1,1]: unselected
+     *                 else: selected
+     */
+    private void childAnimate(float progress) {
+        setContentEffect(BACK_SCALE + (1 - BACK_SCALE) * Math.min(1, Math.abs(progress)));
+        View v = getActView();
+        if (v != null && v instanceof Progressable) {
+            ((Progressable) v).changeProgress(progress);
+        }
+    }
+
+    /**
+     * 填装内容
+     */
+    private void refillContent() {
+        if (mCallback != null) {
+            while (getChildCount() < MAX_COUNT) {
+                View v = mCallback.getNext();
+                if (v == null) {
+                    break;
+                } else {
+                    addView(v, 0);
+                    layoutView(v);
+                }
+            }
+            setContentEffect(BACK_SCALE);
+        }
+    }
+
+    private void layoutView(View v) {
+        v.measure(MeasureSpec.makeMeasureSpec(mInWidth, MeasureSpec.EXACTLY),
+                MeasureSpec.makeMeasureSpec(mInHeight, MeasureSpec.EXACTLY));
+        int l = (mWidth - mInWidth) / 2;
+        int r = l + mInWidth;
+        int t = mCY0 - mInHeight / 2;
+        int b = t + mInHeight;
+        v.layout(l, t, r, b);
+    }
+
+    private void setContentEffect(float startScale) {
+        float scale = startScale;
+        for (int i = getChildCount() - 2; i >= 0; i--) {
+            View v = getChildAt(i);
+            int dy = (int) (mInHeight * (1 - scale) / 1.5);
+            v.setTranslationY(-dy);
+
+            v.setScaleX(scale);
+            v.setScaleY(scale);
+            v.setAlpha((float) Math.pow(scale, 4));
+
+            scale -= (1 - BACK_SCALE);
+        }
     }
 
 
@@ -214,13 +326,26 @@ public class SweepStackLayout extends ViewGroup {
     }
 
     public interface Callback {
+        View getNext();
+
         /**
          * @param v         poped view
-         * @param direction 0: left
+         * @param direction -1: left
          *                  1: right
          */
         void onPop(View v, int direction);
 
         void onClick();
+    }
+
+    public interface Progressable {
+        /**
+         * @param progress 0: center
+         *                 positive: right
+         *                 negtive: left
+         *                 [-1,1]: unselected
+         *                 else: selected
+         */
+        void changeProgress(float progress);
     }
 }
