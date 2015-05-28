@@ -3,10 +3,11 @@ package org.daniel.android.cgtest;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ImageView;
 import org.daniel.android.cgtest.widgets.SweepStackLayout;
+import org.daniel.android.cgtest.widgets.VideoItemView;
 
 public class HomeActivity extends Activity implements SweepStackLayout.Callback {
+    private VideoItemView mViewHolder = null;
     private SweepStackLayout mSweepStack;
 
     @Override
@@ -19,15 +20,21 @@ public class HomeActivity extends Activity implements SweepStackLayout.Callback 
 
     @Override
     public View getNext() {
-        ImageView imageView = new ImageView(getApplication());
-        imageView.setImageResource(R.drawable.mario);
+        VideoItemView v = mViewHolder;
+        mViewHolder = null;
 
-        return imageView;
+        if (v == null) {
+            v = new VideoItemView(getApplicationContext());
+        }
+
+        //加载数据
+
+        return v;
     }
 
     @Override
     public void onPop(View v, int direction) {
-
+        mViewHolder = (VideoItemView) v;
     }
 
     @Override

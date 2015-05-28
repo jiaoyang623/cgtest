@@ -1,8 +1,13 @@
 package org.daniel.android.cgtest.widgets;
 
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import org.daniel.android.cgtest.R;
 
 /**
@@ -12,12 +17,21 @@ import org.daniel.android.cgtest.R;
  * @date May 28 2015 9:12 PM
  */
 public class VideoItemView extends RelativeLayout implements SweepStackLayout.Progressable {
+    private ImageView mContentImage;
+    private ImageView mPositiveImage;
+    private ImageView mNegtiveImage;
+    private TextView mContentText;
+    private TextView mDescText;
+    private Button mShareButton;
+
     public VideoItemView(Context context) {
         super(context);
+        init(context);
     }
 
     public VideoItemView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        init(context);
     }
 
     public VideoItemView(Context context, AttributeSet attrs, int defStyleAttr) {
@@ -27,11 +41,35 @@ public class VideoItemView extends RelativeLayout implements SweepStackLayout.Pr
 
     private void init(Context context) {
         inflate(context, R.layout.item_video, this);
+        mContentImage = (ImageView) findViewById(R.id.imageContent);
+        mPositiveImage = (ImageView) findViewById(R.id.imagePositive);
+        mNegtiveImage = (ImageView) findViewById(R.id.imageNegtive);
+        mContentText = (TextView) findViewById(R.id.textContent);
+        mDescText = (TextView) findViewById(R.id.textDesc);
+        mShareButton = (Button) findViewById(R.id.buttonShare);
 
+        mPositiveImage.setAlpha(0f);
+        mNegtiveImage.setAlpha(0f);
+        setBackgroundColor(0xffffffff);
     }
 
     @Override
     public void changeProgress(float progress) {
+        if (progress > 0) {
+            mPositiveImage.setAlpha(Math.min(1, progress));
+            mNegtiveImage.setAlpha(0f);
+        } else if (progress < 0) {
+            mPositiveImage.setAlpha(0f);
+            mNegtiveImage.setAlpha(Math.min(1, -progress));
+        } else {
+            animTransparent(mPositiveImage);
+            animTransparent(mNegtiveImage);
+        }
+    }
 
+    private void animTransparent(View v) {
+        if (v.getAlpha() != 0) {
+            ObjectAnimator.ofFloat(v, "alpha", 0).setDuration(300).start();
+        }
     }
 }

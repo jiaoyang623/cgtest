@@ -235,6 +235,7 @@ public class SweepStackLayout extends ViewGroup {
 
             scale -= (1 - BACK_SCALE);
         }
+        progressActView(0);
     }
 
     /**
@@ -271,6 +272,10 @@ public class SweepStackLayout extends ViewGroup {
      */
     private void childAnimate(float progress) {
         setContentEffect(BACK_SCALE + (1 - BACK_SCALE) * Math.min(1, Math.abs(progress)));
+        progressActView(progress);
+    }
+
+    private void progressActView(float progress) {
         View v = getActView();
         if (v != null && v instanceof Progressable) {
             ((Progressable) v).changeProgress(progress);
@@ -289,6 +294,9 @@ public class SweepStackLayout extends ViewGroup {
                 } else {
                     addView(v, 0);
                     layoutView(v);
+                    if (v instanceof Progressable) {
+                        ((Progressable) v).changeProgress(0);
+                    }
                 }
             }
             setContentEffect(BACK_SCALE);
@@ -310,6 +318,8 @@ public class SweepStackLayout extends ViewGroup {
         for (int i = getChildCount() - 2; i >= 0; i--) {
             View v = getChildAt(i);
             int dy = (int) (mInHeight * (1 - scale) / 1.5);
+            v.setRotation(0);
+            v.setTranslationX(0);
             v.setTranslationY(-dy);
 
             v.setScaleX(scale);
