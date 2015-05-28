@@ -100,17 +100,25 @@ public class SweepStackLayout extends ViewGroup {
                 mY0 = ev.getY();
                 mCX1 = mCX0;
                 mCY1 = mCY0;
+                View v = getActView();
+                if (v != null) {
+                    mIsTouchIn = mX0 > v.getLeft() && mX0 < v.getRight() && mY0 > v.getTop() && mY0 < v.getBottom();
+                    TU.j(v.getLeft(), mX0, v.getRight(), v.getTop(), mY0, v.getBottom());
+                }
                 return false;
             case MotionEvent.ACTION_MOVE:
                 float dx = ev.getX() - mX0;
                 float dy = ev.getY() - mY0;
-                return (dx * dx + dy * dy > MOVE_THRESHOLD);
+                return mIsTouchIn && (dx * dx + dy * dy > MOVE_THRESHOLD);
         }
         return false;
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        if (!mIsTouchIn) {
+            return true;
+        }
         switch (event.getAction()) {
             case MotionEvent.ACTION_MOVE:
                 int dx = (int) (event.getX() - mX0);

@@ -4,10 +4,7 @@ import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
+import android.widget.*;
 import org.daniel.android.cgtest.R;
 
 /**
@@ -16,7 +13,7 @@ import org.daniel.android.cgtest.R;
  * @version 1.0
  * @date May 28 2015 9:12 PM
  */
-public class VideoItemView extends RelativeLayout implements SweepStackLayout.Progressable {
+public class VideoItemView extends RelativeLayout implements SweepStackLayout.Progressable, View.OnClickListener, View.OnLongClickListener {
     private ImageView mContentImage;
     private ImageView mPositiveImage;
     private ImageView mNegtiveImage;
@@ -51,6 +48,10 @@ public class VideoItemView extends RelativeLayout implements SweepStackLayout.Pr
         mPositiveImage.setAlpha(0f);
         mNegtiveImage.setAlpha(0f);
         setBackgroundColor(0xffffffff);
+
+        mContentImage.setOnClickListener(this);
+        mShareButton.setOnClickListener(this);
+        setOnLongClickListener(this);
     }
 
     @Override
@@ -71,5 +72,23 @@ public class VideoItemView extends RelativeLayout implements SweepStackLayout.Pr
         if (v.getAlpha() != 0) {
             ObjectAnimator.ofFloat(v, "alpha", 0).setDuration(300).start();
         }
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.imageContent:
+                Toast.makeText(getContext(), "Play", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.buttonShare:
+                Toast.makeText(getContext(), "Share", Toast.LENGTH_SHORT).show();
+                break;
+        }
+    }
+
+    @Override
+    public boolean onLongClick(View v) {
+        Toast.makeText(getContext(), "Long Click", Toast.LENGTH_SHORT).show();
+        return true;
     }
 }
