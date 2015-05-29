@@ -117,7 +117,7 @@ public class SweepStackLayout extends ViewGroup {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (!mIsTouchIn) {
-            return true;
+            return false;
         }
         switch (event.getAction()) {
             case MotionEvent.ACTION_MOVE:
