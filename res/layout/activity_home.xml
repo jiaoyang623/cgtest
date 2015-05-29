@@ -1,37 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
 		xmlns:android="http://schemas.android.com/apk/res/android"
-		android:orientation="vertical"
-		android:layout_width="fill_parent"
-		android:layout_height="fill_parent"
-		>
-	<TextView
-			android:layout_width="fill_parent"
-			android:layout_height="wrap_content"
-			android:text="Hello World, HomeActivity"
-			/>
-	<org.daniel.android.cgtest.widgets.SweepStackLayout
-			android:id="@+id/sweep"
-			android:layout_width="match_parent"
-			android:layout_height="match_parent"
-			/>
-	<Button
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:text="Negtive"
-			android:id="@+id/buttonNegtive"
-			android:onClick="onClick"
-			android:layout_alignParentBottom="true"
-			android:layout_alignParentLeft="true"
-			android:layout_alignParentStart="true"/>
-	<Button
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:text="positive"
-			android:id="@+id/buttonPositive"
-			android:onClick="onClick"
-			android:layout_alignParentBottom="true"
-			android:layout_alignParentRight="true"
-			android:layout_alignParentEnd="true"/>
-</RelativeLayout>
+		xmlns:tools="http://schemas.android.com/tools"
+		android:id="@+id/container"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		tools:context="org.daniel.android.cgtest.HomeActivity"
+		tools:ignore="MergeRootFrame"
+		/>
 

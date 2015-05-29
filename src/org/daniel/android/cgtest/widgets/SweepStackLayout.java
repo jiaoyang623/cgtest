@@ -374,8 +374,6 @@ public class SweepStackLayout extends ViewGroup {
          *                  1: right
          */
         void onPop(View v, int direction);
-
-        void onClick();
     }
 
     public interface Progressable {
