@@ -27,9 +27,9 @@ public class SweepStackLayout extends ViewGroup {
     // 显示最多的页数
     private static final int MAX_COUNT = 4;
     //图片长宽比
-    private static final float WPH = 3f / 4f;
+    private static final float WPH = 1;
     // 中心图片占整个View宽度的大小
-    private static final float CENTER_SCALE = 0.7f;
+    private static final float CENTER_SCALE = 0.85f;
     //纵向便宜
     private static final float VERTICAL_CENTER_PERCENT = 0.4F;
     //后面图片的缩放
@@ -142,13 +142,13 @@ public class SweepStackLayout extends ViewGroup {
                     int top = (int) v.getTranslationY();
                     if (scale > UNSELECT_SCALE / 2) {
                         //to right
-                        go(v, mWidth, top, v.getRotation());
+                        go(v, 1);
                     } else if (scale < -UNSELECT_SCALE / 2) {
                         // to left
-                        go(v, -mWidth, top, v.getRotation());
+                        go(v, -1);
                     } else {
                         // to center
-                        go(v, 0, 0, 0);
+                        go(v, 0);
                     }
                 }
                 //结束
@@ -174,7 +174,7 @@ public class SweepStackLayout extends ViewGroup {
     /**
      * 去哪？
      */
-    private void go(final View v, final int x, final int y, float rotation) {
+    private void go(final View v, final int direction) {
         if (v == null) {
             return;
         }
@@ -188,14 +188,24 @@ public class SweepStackLayout extends ViewGroup {
             }
         });
 
-        //第一个页面动画
-        animList.add(ObjectAnimator.ofFloat(v, "rotation", rotation));
-        animList.add(ObjectAnimator.ofFloat(v, "translationX", x));
-        animList.add(ObjectAnimator.ofFloat(v, "translationY", y));
+        if (direction > 0) {
+            animList.add(ObjectAnimator.ofFloat(v, "rotation", v.getRotation()));
+            animList.add(ObjectAnimator.ofFloat(v, "translationX", mWidth));
+            animList.add(ObjectAnimator.ofFloat(v, "translationY", v.getTranslationY()));
 
-        if (x == 0) {
-            // 其他内容复位
-            returnAnimate(animList);
+            returnAnimate(animList, 1);
+        } else if (direction < 0) {
+            animList.add(ObjectAnimator.ofFloat(v, "rotation", v.getRotation()));
+            animList.add(ObjectAnimator.ofFloat(v, "translationX", -mWidth));
+            animList.add(ObjectAnimator.ofFloat(v, "translationY", v.getTranslationY()));
+
+            returnAnimate(animList, 1);
+        } else {
+            animList.add(ObjectAnimator.ofFloat(v, "rotation", 0));
+            animList.add(ObjectAnimator.ofFloat(v, "translationX", 0f));
+            animList.add(ObjectAnimator.ofFloat(v, "translationY", 0f));
+
+            returnAnimate(animList, BACK_SCALE);
         }
 
         animatorSet.playTogether(animList);
@@ -209,9 +219,9 @@ public class SweepStackLayout extends ViewGroup {
             @Override
             public void onAnimationEnd(Animator animation) {
                 if (mCallback != null) {
-                    if (x != 0) {
+                    if (direction != 0) {
                         removeView(v);
-                        mCallback.onPop(v, x > 0 ? 1 : -1);
+                        mCallback.onPop(v, direction);
                         refillContent();
                     }
                 }
@@ -230,8 +240,8 @@ public class SweepStackLayout extends ViewGroup {
 
     }
 
-    private void returnAnimate(List<Animator> animList) {
-        float scale = BACK_SCALE;
+    private void returnAnimate(List<Animator> animList, float toScale) {
+        float scale = toScale;
         for (int i = getChildCount() - 2; i >= 0; i--) {
             View v = getChildAt(i);
             int dy = (int) (mInHeight * (1 - scale) / 1.5);
@@ -336,6 +346,18 @@ public class SweepStackLayout extends ViewGroup {
 
             scale -= (1 - BACK_SCALE);
         }
+    }
+
+    /**
+     * @param direction 方向
+     *                  {-1: left, 1:right}
+     */
+    public void sweep(int direction) {
+        if (direction * direction != 1) {
+            throw new IllegalArgumentException("direction need to be 1 or -1");
+        }
+
+        go(getActView(), direction);
     }
 
 

@@ -6,7 +6,7 @@ import android.view.View;
 import org.daniel.android.cgtest.widgets.SweepStackLayout;
 import org.daniel.android.cgtest.widgets.VideoItemView;
 
-public class HomeActivity extends Activity implements SweepStackLayout.Callback {
+public class HomeActivity extends Activity implements SweepStackLayout.Callback, View.OnClickListener {
     private VideoItemView mViewHolder = null;
     private SweepStackLayout mSweepStack;
 
@@ -40,5 +40,17 @@ public class HomeActivity extends Activity implements SweepStackLayout.Callback 
     @Override
     public void onClick() {
 
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.buttonNegtive:
+                mSweepStack.sweep(-1);
+                break;
+            case R.id.buttonPositive:
+                mSweepStack.sweep(1);
+                break;
+        }
     }
 }
