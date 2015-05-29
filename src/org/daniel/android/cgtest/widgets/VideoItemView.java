@@ -38,6 +38,7 @@ public class VideoItemView extends RelativeLayout implements SweepStackLayout.Pr
 
     private void init(Context context) {
         inflate(context, R.layout.item_video, this);
+        setBackgroundColor(0xff000000);
         mContentImage = (ImageView) findViewById(R.id.imageContent);
         mPositiveImage = (ImageView) findViewById(R.id.imagePositive);
         mNegtiveImage = (ImageView) findViewById(R.id.imageNegtive);
@@ -47,7 +48,6 @@ public class VideoItemView extends RelativeLayout implements SweepStackLayout.Pr
 
         mPositiveImage.setAlpha(0f);
         mNegtiveImage.setAlpha(0f);
-        setBackgroundColor(0xffffffff);
 
         mContentImage.setOnClickListener(this);
         mShareButton.setOnClickListener(this);

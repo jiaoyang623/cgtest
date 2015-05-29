@@ -21,23 +21,39 @@
 			android:id="@+id/textDesc"
 			android:gravity="left|center_vertical"
 			android:singleLine="true"
+			android:textSize="14sp"
+			android:textColor="#ff999999"
 			android:layout_alignParentBottom="true"
 			android:layout_alignParentLeft="true"
 			android:layout_alignParentStart="true"
-			android:layout_toLeftOf="@+id/buttonShare"/>
+			android:layout_marginLeft="10dp"
+			android:layout_toLeftOf="@+id/buttonShare"
+			android:layout_marginBottom="5dp"
+			/>
 	<Button
 			android:layout_width="wrap_content"
 			android:layout_height="40dp"
+			android:padding="10dp"
 			android:text="Share"
 			android:id="@+id/buttonShare"
 			android:layout_alignParentBottom="true"
 			android:layout_alignParentRight="true"
-			android:layout_alignParentEnd="true"/>
+			android:layout_alignParentEnd="true"
+			android:background="@drawable/btn_bg_color"
+			android:drawableLeft="@drawable/ic_share"
+			android:drawablePadding="10dp"
+			android:textColor="#ff0000"
+			android:textSize="14sp"
+			android:layout_marginRight="10dp"
+			android:layout_marginBottom="5dp"
+			/>
 	<View
 			android:layout_width="match_parent"
 			android:layout_height="1px"
 			android:background="#99888888"
 			android:layout_above="@+id/textDesc"
+			android:layout_marginLeft="10dp"
+			android:layout_marginRight="10dp"
 			android:layout_alignParentLeft="true"
 			android:layout_alignParentStart="true"/>
 	<TextView
@@ -48,14 +64,19 @@
 			android:layout_below="@+id/imageContent"
 			android:layout_alignParentLeft="true"
 			android:layout_alignParentStart="true"
+			android:layout_alignParentRight="true"
+			android:layout_alignParentEnd="true"
 			android:layout_above="@+id/textDesc"
-			android:layout_alignRight="@+id/buttonShare"
-			android:layout_alignEnd="@+id/buttonShare"/>
+			android:textSize="16sp"
+			android:textColor="#ffffffff"
+			android:layout_margin="10dp"/>
 	<ImageView
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:id="@+id/imagePositive"
-			android:src="@drawable/ic_launcher"
+			android:src="@drawable/list_card_stamp_saved"
+			android:layout_marginTop="40dp"
+			android:layout_marginLeft="20dp"
 			android:layout_alignTop="@+id/imageContent"
 			android:layout_alignParentLeft="true"
 			android:layout_alignParentStart="true"/>
@@ -63,7 +84,9 @@
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:id="@+id/imageNegtive"
-			android:src="@drawable/ic_launcher"
+			android:src="@drawable/list_card_stamp_skipped"
+			android:layout_marginTop="40dp"
+			android:layout_marginRight="20dp"
 			android:layout_alignTop="@+id/imageContent"
 			android:layout_alignParentRight="true"
 			android:layout_alignParentEnd="true"/>

@@ -3,10 +3,17 @@
       tools:context="com.example.actionbartry.MainActivity">
 
 	<item
-			android:id="@+id/action_settings"
+			android:id="@+id/action_refresh"
 			android:orderInCategory="100"
 			android:showAsAction="ifRoom"
-			android:icon="@drawable/ic_launcher"
-			android:title="@string/action_settings"/>
+			android:icon="@drawable/ic_refresh"
+			android:title="refresh"/>
+
+	<item
+			android:id="@+id/action_favorite"
+			android:orderInCategory="100"
+			android:showAsAction="ifRoom"
+			android:icon="@drawable/ic_favourite2"
+			android:title="favorite"/>
 
 </menu>

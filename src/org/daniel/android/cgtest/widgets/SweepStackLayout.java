@@ -29,9 +29,9 @@ public class SweepStackLayout extends ViewGroup {
     //图片长宽比
     private static final float WPH = 1;
     // 中心图片占整个View宽度的大小
-    private static final float CENTER_SCALE = 0.85f;
+    private static final float CENTER_SCALE = 0.9f;
     //纵向便宜
-    private static final float VERTICAL_CENTER_PERCENT = 0.4F;
+    private static final float VERTICAL_CENTER_PERCENT = 0.35F;
     //后面图片的缩放
     private static final float BACK_SCALE = 0.95f;
     //选中区域

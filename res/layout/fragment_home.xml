@@ -17,15 +17,17 @@
 	<Button
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:text="Negtive"
 			android:id="@+id/buttonNegtive"
+			android:layout_margin="50dp"
+			android:background="@drawable/btn_bg_dismiss"
 			android:layout_alignParentBottom="true"
 			android:layout_alignParentLeft="true"
 			android:layout_alignParentStart="true"/>
 	<Button
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:text="positive"
+			android:layout_margin="50dp"
+			android:background="@drawable/btn_bg_favorite"
 			android:id="@+id/buttonPositive"
 			android:layout_alignParentBottom="true"
 			android:layout_alignParentRight="true"
